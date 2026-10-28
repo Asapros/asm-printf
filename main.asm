@@ -2,34 +2,22 @@ format ELF64 executable
 
 entry start
 
-segment readable executable
-
-include "string.inc"
 include "memory.inc"
 include "syscalls.inc"
+include "string.inc"
+
+segment readable executable
+
+; rdi rsi rdx rcx r8 r9
 
 start:
     mov rdi, message
-    call strlen
-    
-    mov rdx, rax
-    mov rsi, message
-    mov rdi, 1 ; stdout
-    mov rax, 1 ; write
-    syscall
+    call printf
 
-    mov rdi, 16
-    call malloc
-
-    mov rdi, rax
-    mov rsi, 16
-    call free
-
-
-    mov eax, 60
-    mov edi, 0
+    mov rax, SYS_EXIT
+    mov rdi, 0
     syscall
 
 segment readable
 
-message db "Hello, World", 0, "abb"
+message db "Hello, World!", 10, 0

@@ -1,3 +1,5 @@
+segment readable executable
+
 malloc:
     mov rsi, rdi
 
