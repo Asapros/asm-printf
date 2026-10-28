@@ -8,10 +8,12 @@ include "string.inc"
 
 segment readable executable
 
-; rdi rsi rdx rcx r8 r9
+; Parameter order: rdi, rsi, rdx, rcx, r8, r9
 
 start:
     mov rdi, message
+    mov rsi, greeting
+    mov rdx, recipient
     call printf
 
     mov rax, SYS_EXIT
@@ -20,4 +22,6 @@ start:
 
 segment readable
 
-message db "Hello, World!", 10, 0
+message db "%s, %s!", 10, 0
+greeting db "Hello", 0
+recipient db "World", 0
