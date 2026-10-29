@@ -133,15 +133,33 @@ printf: ; pointer, ...
     cmp byte [rdi], "s"
     je .string
 
-    cmp byte [rdi], "d"
-    je .number
+    cmp byte [rdi], "l"
+    jne .not_number
+    cmp byte [rdi+1], "l"
+    jne .not_number
+    cmp byte [rdi+2], "u"
+    je .number_unsigned
+    cmp byte [rdi+2], "d"
+    je .number_signed
+.not_number:
 
     cmp byte [rdi], "%"
     je .escape
 
     jmp .repeat
-.number:
+.number_signed:
     pop rax
+    xor r8, r8 
+
+    cmp rax, 0
+    jge .number
+
+    neg rax
+    mov r8, 1
+    jmp .number
+.number_unsigned:
+    pop rax
+.number:
     mov rsi, printf_buffer + PRINTF_BUFFER_SIZE - 1
     mov [rsi], byte 0
 .digit:
@@ -158,13 +176,18 @@ printf: ; pointer, ...
 
     jmp .digit
 .flush:
+    cmp r8, 0
+    je .flush_unsigned
+    dec rsi
+    mov [rsi], byte "-"
+.flush_unsigned:
     push rdi
     
     mov rdi, rsi
     mov rsi, STDOUT
     call fputs
     pop rdi
-    inc rdi
+    add rdi, 3
 
     jmp .repeat
 .escape:

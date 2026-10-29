@@ -13,7 +13,7 @@ segment readable executable
 start:
     mov rdi, message
     mov rsi, greeting
-    mov rdx, 213769
+    mov rdx, 2137
     call printf
 
     mov rax, SYS_EXIT
@@ -22,6 +22,6 @@ start:
 
 segment readable
 
-message db "%s, %d!", 10, 0
+message db "%s, %lld!", 10, 0
 greeting db "Hello", 0
 recipient db "World", 0
