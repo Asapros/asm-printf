@@ -140,7 +140,33 @@ printf: ; pointer, ...
     je .escape
 
     jmp .repeat
-.number: ; TODO
+.number:
+    pop rax
+    mov rsi, printf_buffer + PRINTF_BUFFER_SIZE - 1
+    mov [rsi], byte 0
+.digit:
+    xor rdx, rdx
+    mov rcx, 10
+    div rcx
+    
+    dec rsi
+    add dl, "0"
+    mov [rsi], dl
+
+    cmp rax, 0
+    je .flush
+
+    jmp .digit
+.flush:
+    push rdi
+    
+    mov rdi, rsi
+    mov rsi, STDOUT
+    call fputs
+    pop rdi
+    inc rdi
+
+    jmp .repeat
 .escape:
     mov rsi, 1
     mov rdx, STDOUT
@@ -170,4 +196,5 @@ printf: ; pointer, ...
 
 segment readable writable
 
-number_stringify_buffer rb 16
+PRINTF_BUFFER_SIZE = 24
+printf_buffer rb PRINTF_BUFFER_SIZE
