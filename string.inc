@@ -6,6 +6,7 @@ memcpy: ; destination, source, size
     
     mov cl, byte [rsi]
     mov [rdi], cl
+
     inc rdi
     inc rsi
     dec rdx
@@ -17,27 +18,15 @@ memcpy: ; destination, source, size
 strcpy: ; destination, source
     push rdi
     push rsi
+
     mov rdi, rsi
     call strlen
+
     mov rdx, rax
     pop rsi
     pop rdi
     call memcpy
-    ret
 
-strncmp: ; string 1, string 2, length
-    cmp rdx, 0
-    je .done
-
-    mov rax, byte [rdi]
-    sub rax, byte [rsi]
-    jnz .done
-    
-    inc rdi
-    inc rsi
-    dec rdx
-    jmp strncmp
-.done:
     ret
 
 memchr: ; pointer, character, max length
@@ -47,34 +36,46 @@ memchr: ; pointer, character, max length
     je .found
     
     inc rax
-
     dec rdx
     jz .not_found
 
     jmp .for
 .not_found:
     mov rax, 0
+
+    ret
 .found:
     ret
 
 strchr: ; pointer, character
+    push rdi
     push rsi
+
     call strlen
+
     pop rsi
+    pop rdi
     mov rdx, rax
     call memchr
+
     ret
 
 
 rawmemchr: ; pointer, character
     mov rdx, -1
     call memchr
+
     ret
 
 strlen: ; pointer
+    push rdi
+
     mov sil, 0
     call rawmemchr
+
+    pop rdi
     sub rax, rdi
+
     ret
 
 fwrite: ; pointer, length, stream
@@ -82,19 +83,22 @@ fwrite: ; pointer, length, stream
     mov rsi, rdi
     mov rdi, rdx
     mov rdx, rcx
-    
     mov rax, SYS_WRITE
     syscall
+
     ret
 
 
 fputs: ; pointer, stream
+    push rdi
     push rsi
     call strlen
-    pop rdx
-    mov rsi, rax
 
+    pop rdx
+    pop rdi
+    mov rsi, rax
     call fwrite
+
     ret
 
 printf: ; pointer, ...
@@ -110,16 +114,17 @@ printf: ; pointer, ...
     mov rsi, "%"
     call strchr
 
+    pop rdi
     cmp rax, 0
     je .rest
 
-    pop rdi
     mov rsi, rax
     sub rsi, rdi
     mov rdx, STDOUT
     push rdi
     push rsi
     call fwrite
+
     pop rsi
     pop rdi
     add rdi, rsi
@@ -157,7 +162,6 @@ printf: ; pointer, ...
 
     jmp .repeat
 .rest:
-    pop rdi
     mov rsi, STDOUT
     call fputs
 .done:
