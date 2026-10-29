@@ -25,6 +25,21 @@ strcpy: ; destination, source
     call memcpy
     ret
 
+strncmp: ; string 1, string 2, length
+    cmp rdx, 0
+    je .done
+
+    mov rax, byte [rdi]
+    sub rax, byte [rsi]
+    jnz .done
+    
+    inc rdi
+    inc rsi
+    dec rdx
+    jmp strncmp
+.done:
+    ret
+
 memchr: ; pointer, character, max length
     mov rax, rdi
 .for:
@@ -151,4 +166,4 @@ printf: ; pointer, ...
 
 segment readable writable
 
-buffer rb 4096
+number_stringify_buffer rb 16
