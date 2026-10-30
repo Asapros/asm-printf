@@ -8,8 +8,6 @@ include "string.inc"
 
 segment readable executable
 
-; Parameter order: rdi, rsi, rdx, rcx, r8, r9
-
 start:
     mov rdi, message
     mov rsi, greeting

@@ -60,7 +60,6 @@ strchr: ; pointer, character
 
     ret
 
-
 rawmemchr: ; pointer, character
     mov rdx, -1
     call memchr
@@ -87,7 +86,6 @@ fwrite: ; pointer, length, stream
     syscall
 
     ret
-
 
 fputs: ; pointer, stream
     push rdi
@@ -142,7 +140,6 @@ printf: ; pointer, ...
     cmp byte [rdi+2], "d"
     je .number_signed
 .not_number:
-
     cmp byte [rdi], "%"
     je .escape
 
